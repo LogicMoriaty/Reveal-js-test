@@ -17,9 +17,9 @@ const slides: SlideData[] = [
   {
     id: SlideType.COVER,
     title: "自然观、科学认识方法与科学认识",
-    subtitle: "从机械时钟到蜂群思维",
+    subtitle: "从牛顿、爱因斯坦、哥本哈根学派到安德森",
     description: "探究人类自然观、科学方法与科学知识之间深刻的辩证演化关系。",
-    person: "主讲：AI 科学助手"
+    person: "董玉豪 自然辩证法第三组（63-93）"
   },
   // 2. TOC
   {
@@ -284,87 +284,247 @@ const SlideDeck: React.FC = () => {
     pres.layout = 'LAYOUT_16x9';
     pres.author = 'AI Science Assistant';
     pres.title = slides[0].title;
+    
+    // Define Color Palette
+    const colors = {
+      bg: "020C1B",       // navy-950/900 mix
+      bgGradient: "0A192F",
+      cardBg: "112240",   // navy-700
+      accent: "64FFDA",   // cyan/teal
+      textMain: "CCD6F6", // slate-light
+      textDim: "8892B0",  // slate-dim
+      white: "FFFFFF",
+      border: "233554"
+    };
 
-    // Theme Colors
-    const bgDark = "020c1b";
-    const textLight = "ccd6f6";
-    const textDim = "8892b0";
-    const accent = "64ffda"; 
+    // Standard styling configs
+    const fontMain = "Microsoft YaHei"; // Fallback for Chinese
+    const fontMono = "Consolas";
 
     slides.forEach((slide) => {
       const pptxSlide = pres.addSlide();
-      pptxSlide.background = { color: bgDark };
+      
+      // 1. Background: Dark Navy Solid
+      pptxSlide.background = { color: colors.bg };
+      
+      // 2. Subtle Background Decor (Simulating the canvas feel)
+      // Add a very large, faint gradient circle in the corner
+      pptxSlide.addShape(pres.ShapeType.ellipse, {
+          x: 9, y: -2, w: 10, h: 10,
+          fill: { color: colors.bgGradient, transparency: 80 },
+          line: { color: "FFFFFF", width: 0, transparency: 100 }
+      });
+      // Add grid lines (WarpGrid simulation) if it's a technical slide
+      if (slide.id === SlideType.NEWTON || slide.id === SlideType.EINSTEIN || slide.id === SlideType.QUANTUM) {
+         pptxSlide.addShape(pres.ShapeType.line, { x: 0, y: 1.5, w: 10, h: 0, line: { color: colors.border, width: 0.5, dashType: 'dash' } });
+         pptxSlide.addShape(pres.ShapeType.line, { x: 0, y: 6.5, w: 10, h: 0, line: { color: colors.border, width: 0.5, dashType: 'dash' } });
+      }
 
-      // Common Footer
-      pptxSlide.addText(`${slide.id} - ${slide.subtitle}`, { 
-          x: 0.2, y: 7.2, fontSize: 8, color: "303C55" 
+      // 3. Footer
+      pptxSlide.addText(`${slide.id}  |  ${slide.subtitle}`, { 
+          x: 0.3, y: 7.2, w: "50%", fontSize: 9, color: "303C55", fontFace: fontMono 
+      });
+      pptxSlide.addText("AI SCIENCE DECK", { 
+          x: 8, y: 7.2, w: "18%", align: "right", fontSize: 9, color: "303C55", fontFace: fontMono 
       });
 
+      // --- SPECIFIC SLIDE LAYOUTS ---
+
       if (slide.id === SlideType.COVER) {
-        pptxSlide.addText("SCIENTIFIC EVOLUTION", { x: 0, y: 0.5, w: "100%", align: "center", fontSize: 14, color: textDim, charSpacing: 5 });
-        pptxSlide.addText(slide.title, { x: 0.5, y: 2, w: "90%", align: "center", fontSize: 36, color: "ffffff", bold: true });
-        pptxSlide.addText(slide.subtitle, { x: 0.5, y: 3.2, w: "90%", align: "center", fontSize: 20, color: accent });
-        pptxSlide.addText(slide.person || "", { x: 0, y: 6, w: "100%", align: "center", fontSize: 14, color: textDim });
-      } 
-      else if (slide.id === SlideType.TOC) {
-        pptxSlide.addText(slide.title, { x: 0.5, y: 0.5, fontSize: 32, color: "ffffff", bold: true });
-        pptxSlide.addText(slide.subtitle, { x: 0.5, y: 1.1, fontSize: 14, color: accent });
-        slide.details?.forEach((item, idx) => {
-             const yPos = 1.8 + (idx * 0.8);
-             pptxSlide.addText(item.label, { x: 1, y: yPos, w: 1, fontSize: 24, color: accent, bold: true });
-             pptxSlide.addText(item.value as string, { x: 2, y: yPos, w: 7, fontSize: 18, color: textLight });
-             pptxSlide.addShape(pres.ShapeType.line, { x: 2, y: yPos + 0.5, w: 7, h: 0, line: { color: "112240", width: 1 } });
+        // Centered Layout
+        pptxSlide.addText("SCIENTIFIC EVOLUTION", { 
+            x: 0, y: 1.5, w: "100%", align: "center", 
+            fontSize: 14, color: colors.textDim, charSpacing: 5, fontFace: fontMono 
         });
-      }
-      else if (slide.id === SlideType.CONCEPTS) {
-        pptxSlide.addText(slide.title, { x: 0.5, y: 0.5, fontSize: 32, color: "ffffff" });
-        pptxSlide.addText(slide.subtitle, { x: 0.5, y: 1.1, fontSize: 14, color: accent });
-        const cards = [
-            { t: "自然观", d: "人们对自然界最根本的看法和观点。" },
-            { t: "科学方法", d: "为了获得客观真理而采用的一整套规则与程序。" },
-            { t: "科学认识", d: "通过方法研究获得的客观事实、理论与定律。" }
-        ];
-        cards.forEach((card, i) => {
-            const xPos = 0.5 + (i * 3.2);
-            pptxSlide.addShape(pres.ShapeType.rect, { x: xPos, y: 2.5, w: 3, h: 3, fill: { color: "112240" } });
-            pptxSlide.addText(card.t, { x: xPos + 0.2, y: 2.8, w: 2.6, fontSize: 18, color: "ffffff", bold: true });
-            pptxSlide.addText(card.d, { x: xPos + 0.2, y: 3.5, w: 2.6, fontSize: 16, color: textLight });
+        pptxSlide.addText(slide.title, { 
+            x: 0.5, y: 2.5, w: 9, align: "center", 
+            fontSize: 44, color: colors.white, bold: true, fontFace: fontMain
         });
-      }
-      else if (slide.id === SlideType.SUMMARY) {
-        pptxSlide.addText(slide.title, { x: 0.5, y: 0.5, fontSize: 32, color: "ffffff" });
-        pptxSlide.addText("自然观 → 方法 → 认识 → 新自然观", { x: 0.5, y: 2.5, w: 9, align: "center", fontSize: 24, color: accent });
-        pptxSlide.addText("新知识迫使我们抛弃旧的世界观，从而开启新的循环。", { x: 1, y: 4, w: 8, align: "center", fontSize: 18, color: textLight, italic: true });
-      }
-      else if (slide.id === SlideType.ENDING) {
-        pptxSlide.addText(slide.title, { x: 0, y: 3, w: "100%", align: "center", fontSize: 40, color: "ffffff" });
-      }
-      else {
-        // GENERIC CONTENT SLIDE (Newton, Einstein, Quantum, Anderson)
-        pptxSlide.addText(slide.subtitle, { x: 0.5, y: 0.4, fontSize: 10, color: textDim });
-        pptxSlide.addText(slide.title, { x: 0.5, y: 0.7, fontSize: 28, color: "ffffff", bold: true });
-        if (slide.person) {
-            pptxSlide.addText(slide.person, { x: 0.5, y: 1.3, fontSize: 14, color: accent, italic: true });
+        // Decorative Line
+        pptxSlide.addShape(pres.ShapeType.line, {
+            x: 4.5, y: 4, w: 1, h: 0, line: { color: colors.textDim, width: 1 } 
+        });
+        pptxSlide.addText(slide.subtitle, { 
+            x: 0.5, y: 4.5, w: 9, align: "center", 
+            fontSize: 24, color: colors.accent, fontFace: fontMain 
+        });
+        if (slide.description) {
+            pptxSlide.addText(slide.description, { 
+                x: 2, y: 5.5, w: 6, align: "center", 
+                fontSize: 16, color: colors.textDim, fontFace: fontMain 
+            });
         }
+      } 
+      
+      else if (slide.id === SlideType.TOC) {
+        // Left Header
+        pptxSlide.addText(slide.title, { x: 0.5, y: 0.5, fontSize: 36, color: colors.white, bold: true, fontFace: fontMain });
+        pptxSlide.addText(slide.subtitle, { x: 0.5, y: 1.1, fontSize: 12, color: colors.accent, fontFace: fontMono });
         
+        // Grid Content
+        slide.details?.forEach((item, idx) => {
+             const col = idx % 2;
+             const row = Math.floor(idx / 2);
+             const xPos = col === 0 ? 0.8 : 5.5;
+             const yPos = 2.0 + (row * 1.5);
+             
+             // Number
+             pptxSlide.addText(item.label, { 
+                 x: xPos, y: yPos, w: 1, fontSize: 32, color: "334155", fontFace: fontMono, bold: true 
+             });
+             // Separator Line
+             pptxSlide.addShape(pres.ShapeType.line, {
+                 x: xPos + 1.2, y: yPos + 0.3, w: 0.05, h: 0.4, line: { color: colors.accent, width: 2 }
+             });
+             // Text
+             pptxSlide.addText(item.value as string, { 
+                 x: xPos + 1.5, y: yPos + 0.1, w: 3.5, fontSize: 18, color: colors.textMain, fontFace: fontMain 
+             });
+        });
+      }
+      
+      else if (slide.id === SlideType.CONCEPTS) {
+        // Header
+        pptxSlide.addText(slide.title, { x: 0.5, y: 0.5, fontSize: 36, color: colors.white, bold: true, fontFace: fontMain });
+        pptxSlide.addText(slide.subtitle, { x: 0.5, y: 1.1, fontSize: 12, color: colors.accent, fontFace: fontMono });
+
+        // 3 Glass Panels
+        const cards = [
+            { t: "自然观", e: "View of Nature", d: "人们对自然界最根本的看法和观点。" },
+            { t: "科学方法", e: "Methodology", d: "为了获得客观真理而采用的一整套规则与程序。" },
+            { t: "科学认识", e: "Knowledge", d: "通过方法研究获得的客观事实、理论与定律。" }
+        ];
+
+        cards.forEach((card, i) => {
+            const xPos = 0.5 + (i * 3.1);
+            const yPos = 2.5;
+            
+            // Glass Panel Shape (Semi-transparent rect)
+            pptxSlide.addShape(pres.ShapeType.roundRect, { 
+                x: xPos, y: yPos, w: 2.8, h: 3.5, rectRadius: 0.2,
+                fill: { color: colors.cardBg, transparency: 85 },
+                line: { color: colors.white, width: 0.5, transparency: 90 }
+            });
+
+            // Content
+            pptxSlide.addText(card.t, { x: xPos + 0.2, y: yPos + 0.4, w: 2.4, fontSize: 24, color: colors.white, bold: true, fontFace: fontMain });
+            pptxSlide.addText(card.e, { x: xPos + 0.2, y: yPos + 0.9, w: 2.4, fontSize: 10, color: colors.textDim, fontFace: fontMono });
+            pptxSlide.addText(card.d, { x: xPos + 0.2, y: yPos + 1.4, w: 2.4, fontSize: 16, color: colors.textMain, fontFace: fontMain });
+        });
+      }
+
+      else if (slide.id === SlideType.SUMMARY) {
+        pptxSlide.addText(slide.title, { x: 0.5, y: 0.5, fontSize: 36, color: colors.white, bold: true, fontFace: fontMain });
+        
+        // 3 Step Process
+        const steps = [
+             { step: "01", t: "自然观", d: "Paradigm" },
+             { step: "02", t: "方法论", d: "Method" },
+             { step: "03", t: "科学认识", d: "Knowledge" }
+        ];
+
+        // Connection Line
+        pptxSlide.addShape(pres.ShapeType.line, { x: 2, y: 3.5, w: 6, h: 0, line: { color: colors.border, width: 1, dashType: 'dash' } });
+
+        steps.forEach((s, i) => {
+            const xPos = 1.5 + (i * 2.8);
+            // Circle Background
+            pptxSlide.addShape(pres.ShapeType.ellipse, { 
+                x: xPos + 0.5, y: 2.8, w: 1.4, h: 1.4, 
+                fill: { color: colors.bg, transparency: 0 },
+                line: { color: colors.accent, width: 1 } 
+            });
+            // Step Number
+            pptxSlide.addText(s.step, { x: xPos + 0.5, y: 3, w: 1.4, align: "center", fontSize: 12, color: colors.accent, fontFace: fontMono });
+            // Title
+            pptxSlide.addText(s.t, { x: xPos, y: 4.3, w: 2.4, align: "center", fontSize: 24, color: colors.white, bold: true, fontFace: fontMain });
+            pptxSlide.addText(s.d, { x: xPos, y: 4.8, w: 2.4, align: "center", fontSize: 12, color: colors.textDim, fontFace: fontMono });
+        });
+
+        // Quote Box
+        pptxSlide.addShape(pres.ShapeType.roundRect, {
+            x: 2, y: 5.8, w: 6, h: 1.2, rectRadius: 0.1,
+            fill: { color: colors.cardBg, transparency: 80 },
+            line: { color: colors.accent, width: 0, transparency: 100 } // Accent left border simulation
+        });
+        // Accent border on left
+        pptxSlide.addShape(pres.ShapeType.rect, { x: 2, y: 5.8, w: 0.05, h: 1.2, fill: { color: colors.accent } });
+        
+        pptxSlide.addText("“新知识迫使我们抛弃旧的世界观，从而开启新的循环。”", { 
+            x: 2.2, y: 6.0, w: 5.6, align: "center", fontSize: 18, color: colors.textMain, italic: true, fontFace: fontMain 
+        });
+      }
+      
+      else if (slide.id === SlideType.ENDING) {
+        pptxSlide.addText(slide.title, { x: 0, y: 3, w: "100%", align: "center", fontSize: 40, color: colors.white, fontFace: fontMain });
+        pptxSlide.addText(slide.subtitle, { x: 0, y: 4, w: "100%", align: "center", fontSize: 20, color: colors.accent, fontFace: fontMono });
+      }
+
+      else {
+        // --- GENERIC CONTENT SLIDE (The bulk of the content) ---
+        // Two column layout simulation
+        
+        // LEFT COLUMN (Header)
+        pptxSlide.addText(slide.subtitle, { x: 0.5, y: 0.5, fontSize: 10, color: colors.textDim, fontFace: fontMono, line: { color: colors.border, width: 0.5 } });
+        
+        // Handle Multiline Title (split by colon usually in data)
+        const titles = slide.title.split('：');
+        if (titles.length > 1) {
+            pptxSlide.addText(titles[0], { x: 0.5, y: 0.8, fontSize: 24, color: colors.textDim, fontFace: fontMain });
+            pptxSlide.addText(titles[1], { x: 0.5, y: 1.3, fontSize: 36, color: colors.white, bold: true, fontFace: fontMain });
+        } else {
+             pptxSlide.addText(slide.title, { x: 0.5, y: 0.8, fontSize: 36, color: colors.white, bold: true, fontFace: fontMain });
+        }
+
+        if (slide.person) {
+            pptxSlide.addShape(pres.ShapeType.line, { x: 0.5, y: 2.2, w: 0, h: 0.4, line: { color: colors.accent, width: 3 } });
+            pptxSlide.addText(slide.person, { x: 0.6, y: 2.2, fontSize: 14, color: colors.accent, italic: true, fontFace: fontMain });
+        }
+
+        // RIGHT COLUMN (Details as Cards)
+        // We start drawing cards from x = 4
         slide.details?.forEach((detail, i) => {
-            let yPos = 2.0 + (i * 1.4); // Increased spacing
-            if (i > 3) yPos = 1.5 + (i * 1.1); // Compact if many items
-            
-            pptxSlide.addText(detail.label, { x: 0.5, y: yPos, fontSize: 18, color: accent, bold: true });
-            
+            let yPos = 0.5 + (i * 1.6); 
+            // Compact logic if many items
+            if (slide.details && slide.details.length > 3) {
+                yPos = 0.5 + (i * 1.5);
+            }
+
+            // 1. Draw Glass Panel Background for each item
+            pptxSlide.addShape(pres.ShapeType.roundRect, {
+                x: 4.2, y: yPos, w: 5.5, h: 1.4, rectRadius: 0.1,
+                fill: { color: colors.cardBg, transparency: 90 },
+                line: { color: colors.border, width: 0.5 }
+            });
+
+            // 2. Draw Label (The Title of the card)
+            // Accent Dot
+            pptxSlide.addShape(pres.ShapeType.ellipse, { x: 4.4, y: yPos + 0.25, w: 0.1, h: 0.1, fill: { color: colors.accent } });
+            // Label Text
+            pptxSlide.addText(detail.label, { 
+                x: 4.6, y: yPos + 0.15, w: 4.8, fontSize: 16, color: colors.white, bold: true, fontFace: fontMain 
+            });
+
+            // 3. Draw Value (The content)
+            const textY = yPos + 0.5;
             if (Array.isArray(detail.value)) {
+                // Bullet points handled manually for better control
                 detail.value.forEach((val, idx) => {
-                    pptxSlide.addText(`• ${val}`, { x: 0.5, y: yPos + 0.5 + (idx * 0.4), w: 9, fontSize: 16, color: textLight });
+                     pptxSlide.addText(`• ${val}`, { 
+                         x: 4.6, y: textY + (idx * 0.25), w: 5, fontSize: 12, color: colors.textMain, fontFace: fontMain 
+                     });
                 });
             } else {
-                pptxSlide.addText(detail.value, { x: 0.5, y: yPos + 0.5, w: 9, fontSize: 16, color: textLight });
+                pptxSlide.addText(detail.value, { 
+                    x: 4.6, y: textY, w: 5, fontSize: 12, color: colors.textMain, fontFace: fontMain,
+                    paraSpaceBefore: 5
+                });
             }
         });
       }
     });
 
-    pres.writeFile({ fileName: "Science_Evolution_Full.pptx" });
+    pres.writeFile({ fileName: "Science_Evolution_Immersive.pptx" });
   };
 
   // --- RENDERERS ---
@@ -400,7 +560,7 @@ const SlideDeck: React.FC = () => {
       <p className="text-slate-dim text-lg md:text-2xl font-light max-w-3xl mx-auto leading-relaxed animate-[fadeInUp_1s_ease-out_1s_forwards] opacity-0">
         {data.description}
       </p>
-      <div className="mt-12 text-sm font-mono text-slate-dim/40 animate-[fadeInUp_1s_ease-out_1.5s_forwards] opacity-0">
+      <div className="mt-12 text-xl md:text-2xl font-mono text-slate-dim/60 animate-[fadeInUp_1s_ease-out_1.5s_forwards] opacity-0">
         {data.person}
       </div>
     </div>
