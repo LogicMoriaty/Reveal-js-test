@@ -1,12 +1,12 @@
 import React from 'react';
 import SlideDeck from './components/SlideDeck';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <main className="bg-navy-900 min-h-screen">
+    <div className="w-full h-screen overflow-hidden bg-navy-900">
       <SlideDeck />
-    </main>
+    </div>
   );
-}
+};
 
 export default App;
