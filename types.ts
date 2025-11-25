@@ -10,6 +10,7 @@ export enum SlideType {
   QUANTUM = 'QUANTUM',
   ANDERSON = 'ANDERSON',
   SUMMARY = 'SUMMARY',
+  SPIRAL = 'SPIRAL',
   ENDING = 'ENDING'
 }
 

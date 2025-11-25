@@ -16,6 +16,7 @@ import { UIOverlay } from './backgrounds/UIOverlay';
 import QuantumOrbitals from './QuantumOrbitals';
 import BoidsSimulation from './Boids/BoidsSimulation';
 import CooperPairSimulation from './CooperPair/CooperPairSimulation';
+import SpiralSimulation from './Spiral/SpiralSimulation';
 
 // Images
 // Using absolute paths from root for static assets to avoid module resolution issues
@@ -912,8 +913,8 @@ const slides: SlideData[] = [
         label: "紫外灾难", 
         value: (
           <div className="flex flex-col gap-6 h-full">
-            <p className="leading-relaxed">经典理论预言黑体辐射高频能量无穷大，意味着能量连续观念在原子尺度失效。</p>
-            <div className="mt-auto rounded-lg overflow-hidden bg-white/5 p-4 h-56 flex items-center justify-center">
+            <p className="leading-relaxed font-light text-xl">经典理论预言黑体辐射高频能量无穷大，意味着能量连续观念在原子尺度失效。</p>
+            <div className="mt-auto rounded-lg overflow-hidden bg-white/5 p-4 h-64 flex items-center justify-center transform hover:scale-105 transition-transform duration-500">
                <img src="https://image.logicmoriaty.top/Blackbody.svg" className="max-w-full max-h-full object-contain" alt="Ultraviolet Catastrophe" />
             </div>
           </div>
@@ -923,8 +924,8 @@ const slides: SlideData[] = [
         label: "光电效应", 
         value: (
           <div className="flex flex-col gap-6 h-full">
-            <p className="leading-relaxed">光的能量取决于频率而非强度，暗示光以离散“量子”形式传递。</p>
-            <div className="mt-auto rounded-lg overflow-hidden bg-white/5 p-4 h-56 flex items-center justify-center">
+            <p className="leading-relaxed font-light text-xl">光的能量取决于频率而非强度，暗示光以离散“量子”形式传递。</p>
+            <div className="mt-auto rounded-lg overflow-hidden bg-white/5 p-4 h-64 flex items-center justify-center transform hover:scale-105 transition-transform duration-500">
                <img src="https://image.logicmoriaty.top/Photoelectric.svg" className="max-w-full max-h-full object-contain" alt="Photoelectric Effect" />
             </div>
           </div>
@@ -934,8 +935,8 @@ const slides: SlideData[] = [
         label: "原子光谱", 
         value: (
           <div className="flex flex-col gap-6 h-full">
-            <p className="leading-relaxed">原子的分立线状谱与经典电磁理论（预言原子坍缩）完全矛盾。</p>
-            <div className="mt-auto rounded-lg overflow-hidden bg-white/5 p-4 h-56 flex items-center justify-center">
+            <p className="leading-relaxed font-light text-xl">原子的分立线状谱与经典电磁理论（预言原子坍缩）完全矛盾。</p>
+            <div className="mt-auto rounded-lg overflow-hidden bg-white/5 p-4 h-64 flex items-center justify-center transform hover:scale-105 transition-transform duration-500">
                <img src="https://image.logicmoriaty.top/HydrogenSpectra.webp" className="max-w-full max-h-full object-contain" alt="Atomic Spectra" />
             </div>
           </div>
@@ -945,8 +946,8 @@ const slides: SlideData[] = [
         label: "电子衍射", 
         value: (
           <div className="flex flex-col gap-6 h-full">
-            <p className="leading-relaxed">实物粒子（电子）穿过晶体产生衍射，证明粒子也具有波动性。</p>
-            <div className="mt-auto rounded-lg overflow-hidden bg-white/5 p-4 h-56 flex items-center justify-center">
+            <p className="leading-relaxed font-light text-xl">实物粒子（电子）穿过晶体产生衍射，证明粒子也具有波动性。</p>
+            <div className="mt-auto rounded-lg overflow-hidden bg-white/5 p-4 h-64 flex items-center justify-center transform hover:scale-105 transition-transform duration-500">
                <img src="https://image.logicmoriaty.top/ZADP.webp" className="max-w-full max-h-full object-contain" alt="Electron Diffraction" />
             </div>
           </div>
@@ -1091,6 +1092,14 @@ const slides: SlideData[] = [
     subtitle: "THE EVOLUTIONARY SPIRAL",
     description: "科学不仅是知识的积累，更是世界观的不断重塑。"
   },
+  // --- NEW SPIRAL SIMULATION SLIDE ---
+  {
+      id: SlideType.SPIRAL,
+      title: "循此苦旅，直抵群星",
+      subtitle: "AD ASTRA PER ASPERA",
+      description: "科学并非简单的圆周循环，而是永无止境的螺旋上升。",
+      isInteractive: true
+  },
   {
     id: SlideType.ENDING,
     title: "致谢与交流",
@@ -1117,6 +1126,7 @@ const BackgroundLayers: React.FC<{ currentId: SlideType }> = React.memo(({ curre
       case SlideType.QUANTUM: activeType = 'QUANTUM'; break;
       case SlideType.ANDERSON: activeType = 'CRYSTAL'; break;
       case SlideType.SUMMARY: activeType = 'ORBIT'; break;
+      case SlideType.SPIRAL: activeType = 'NONE'; break; // Disable others for spiral
       default: activeType = 'NETWORK';
   }
 
@@ -1851,20 +1861,27 @@ const SlideDeck: React.FC = () => {
       <div className="absolute inset-0 z-20 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,#020c1b_100%)] opacity-60"></div>
 
       {/* Content Layer */}
-      <div className="absolute inset-0 z-30 flex flex-col items-center justify-center px-6 md:px-32 overflow-y-auto md:overflow-hidden no-scrollbar">
-        <div key={currentSlide} className="w-full flex justify-center py-10 md:py-0 h-full items-center">
-           {currentData.id === SlideType.COVER && renderCover(currentData)}
-           {currentData.isChapterTitle && renderChapterTitle(currentData)}
-           {!currentData.isChapterTitle && currentData.id === SlideType.TOC && renderTOC(currentData)}
-           {!currentData.isChapterTitle && currentData.id === SlideType.CONCEPTS && renderConcepts(currentData)}
-           {!currentData.isChapterTitle && (currentData.id === SlideType.NEWTON || 
-             currentData.id === SlideType.EINSTEIN || 
-             currentData.id === SlideType.QUANTUM || 
-             currentData.id === SlideType.ANDERSON) && renderContentSlide(currentData)}
-           {currentData.id === SlideType.SUMMARY && renderSummary(currentData)}
-           {currentData.id === SlideType.ENDING && renderEnding(currentData)}
+      {/* If SPIRAL, render full screen without padding */}
+      {currentData.id === SlideType.SPIRAL ? (
+         <div className="absolute inset-0 z-30 animate-fade-in-slow">
+            <SpiralSimulation />
+         </div>
+      ) : (
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center px-6 md:px-32 overflow-y-auto md:overflow-hidden no-scrollbar">
+           <div key={currentSlide} className="w-full flex justify-center py-10 md:py-0 h-full items-center">
+            {currentData.id === SlideType.COVER && renderCover(currentData)}
+            {currentData.isChapterTitle && renderChapterTitle(currentData)}
+            {!currentData.isChapterTitle && currentData.id === SlideType.TOC && renderTOC(currentData)}
+            {!currentData.isChapterTitle && currentData.id === SlideType.CONCEPTS && renderConcepts(currentData)}
+            {!currentData.isChapterTitle && (currentData.id === SlideType.NEWTON || 
+              currentData.id === SlideType.EINSTEIN || 
+              currentData.id === SlideType.QUANTUM || 
+              currentData.id === SlideType.ANDERSON) && renderContentSlide(currentData)}
+            {currentData.id === SlideType.SUMMARY && renderSummary(currentData)}
+            {currentData.id === SlideType.ENDING && renderEnding(currentData)}
+           </div>
         </div>
-      </div>
+      )}
 
       {/* Controls */}
       <div className="fixed bottom-8 left-0 right-0 z-50 px-8 md:px-16 flex justify-between items-end pointer-events-none">
